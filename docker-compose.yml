@@ -15,7 +15,7 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: secret_password
     volumes:
       - dbdata:/var/lib/postgresql/data/
 
