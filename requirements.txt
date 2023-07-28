@@ -1,0 +1,5 @@
+aiogram==3.0.0b8;
+asyncpg>=0.27.0;
+cachetools>=5.2.0;
+sqlalchemy>=1.4.45;
+pyyaml>=6.0;

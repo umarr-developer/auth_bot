@@ -1,0 +1,15 @@
+bot:
+  token: "1234567890:AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  admin_ids:
+    - 1234567890
+
+db:
+  database: "postgres"
+  host: "db"
+  user: "postgres"
+  password: "example"
+
+logging:
+  level: "INFO"
+  file: ".log"
+  format: "%(name)s | %(asctime)s | %(funcName)s | %(filename)s | %(levelname)s | %(message)s"
