@@ -1,7 +1,7 @@
-from aiogram import F, Router, types
+from aiogram import Router, types
 from aiogram.filters import Command
 
-from src.models.user import User
+from src.models import User
 
 router = Router()
 
