@@ -17,3 +17,10 @@ class Question(Base):
         async with db_session() as session:
             response = await session.execute(sql)
         return response.fetchone()
+
+    @classmethod
+    async def all(cls, db_session: sessionmaker) -> list[tuple['Question']]:
+        sql = select(cls)
+        async with db_session() as session:
+            response = await session.execute(sql)
+        return response.fetchall()
