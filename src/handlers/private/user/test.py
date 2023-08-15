@@ -17,44 +17,12 @@ class Test(StatesGroup):
     testing = State()
 
 
-@router.message(F.text == 'Перейти к тесту')
-async def on_test(message: types.Message, db, user: tuple[User]):
-    text = 'Нажмите <b>Запустить тест</b>, если готовы начинать его проходить'
-    keyboard = types.InlineKeyboardMarkup(
-        inline_keyboard=[
-            [types.InlineKeyboardButton(
-                text='Запустить тест', callback_data='launch_test')]
-        ]
-    )
-    await message.answer(text, reply_markup=keyboard)
-
-
-@router.callback_query(F.data == 'launch_test')
-async def on_laucnh_test(callback: types.CallbackQuery, state: FSMContext, db, bot):
-    text = 'Идет загрузка теста'
-    await callback.message.edit_text(text)
-
-    async with ChatActionSender.typing(chat_id=callback.message.chat.id, bot=bot):
-        await asyncio.sleep(1)
-        text = 'Загрузка теста завершена'
-        questions = await Question.all(db)
-
-        await state.set_state(Test.testing)
-        await state.update_data(questions=questions, result=0)
-        await callback.message.answer(text)
-
-    await on_test(callback, state)
-
-
 async def on_test(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
 
     if not data['questions']:
-        await state.clear()
-        text = f'Конец теста, ваш результат: {data["result"]}'
-        await callback.message.answer(text)
+        await on_finish_test(callback, state)
         return
-
     questions: list = data['questions']
     question: Question = questions[0][0]
     await state.update_data(questions=questions)
@@ -69,6 +37,48 @@ async def on_test(callback: types.CallbackQuery, state: FSMContext):
         await callback.message.reply_photo(question.photo_id, caption=text, reply_markup=keyboard)
         return
     await callback.message.answer(text, reply_markup=keyboard)
+
+
+async def on_finish_test(callback: types.CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    text = 'Тест завершен\n\n'\
+        f'Ваш результат: {data["result"]} правильных из {data["count"]} ответов'
+    keyboard = types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [types.InlineKeyboardButton(text='Поделиться', url='tg://share')]
+        ]
+    )
+    await state.clear()
+    await callback.message.answer(text, reply_markup=keyboard)
+
+
+@router.message(F.text == 'Перейти к тесту')
+async def on_start_test(message: types.Message):
+    text = 'Нажмите <b>Запустить тест</b>, если готовы начинать его проходить'
+    keyboard = types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [types.InlineKeyboardButton(
+                text='Запустить тест', callback_data='launch_test')]
+        ]
+    )
+    await message.answer(text, reply_markup=keyboard)
+
+
+@router.callback_query(F.data == 'launch_test')
+async def on_launch_test(callback: types.CallbackQuery, state: FSMContext, db, bot):
+    text = 'Идет загрузка теста'
+    await callback.message.edit_text(text)
+
+    async with ChatActionSender.typing(chat_id=callback.message.chat.id, bot=bot):
+        await asyncio.sleep(1)
+        text = 'Загрузка теста завершена'
+        questions = await Question.all(db)
+
+        await state.set_state(Test.testing)
+        await state.update_data(questions=questions, result=0, count=len(questions))
+        await callback.message.answer(text)
+
+    await on_test(callback, state)
 
 
 @router.callback_query(Test.testing, F.data == 'true')
