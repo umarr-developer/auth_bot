@@ -5,9 +5,7 @@ from src.handlers.private.user import about, file_id, start, test
 from src.middlewares import ThrottlingMiddleware, UserMiddleware
 
 router = Router()
-router.message.middleware(UserMiddleware())
 router.message.middleware(ThrottlingMiddleware())
-router.callback_query.middleware(UserMiddleware())
 router.include_router(start.router)
 router.include_router(file_id.router)
 router.include_router(test.router)

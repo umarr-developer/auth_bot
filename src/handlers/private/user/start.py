@@ -17,7 +17,8 @@ async def menu(message: types.Message | types.CallbackQuery):
 
 
 @router.message(Command(commands=['start']))
-async def on_start(message: types.Message, db, user: tuple[User]):
+async def on_start(message: types.Message, db):
+    user = await User.get(db, user_id=message.from_user.id)
     if not user:
         user = await User.new(db, user_id=message.from_user.id)
     text = f'Добро пожаловать, <b>{message.from_user.first_name}</b>'
