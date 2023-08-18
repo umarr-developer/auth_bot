@@ -54,7 +54,8 @@ async def on_finish_test(callback: types.CallbackQuery, state: FSMContext):
 
 @router.message(F.text == 'Перейти к тесту')
 async def on_start_test(message: types.Message):
-    text = 'Нажмите <b>Запустить тест</b>, если готовы начинать его проходить'
+    text = 'Нажмите <b>Запустить тест</b>, если готовы начинать его проходить\n\n'\
+        'Если хотите отменить, то введите команду или нажмите на кнопку "Отмена"'
     keyboard = types.InlineKeyboardMarkup(
         inline_keyboard=[
             [types.InlineKeyboardButton(
@@ -66,8 +67,14 @@ async def on_start_test(message: types.Message):
 
 @router.callback_query(F.data == 'launch_test')
 async def on_launch_test(callback: types.CallbackQuery, state: FSMContext, db, bot):
+    await callback.message.edit_reply_markup()
     text = 'Идет загрузка теста'
-    await callback.message.edit_text(text)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                                         keyboard=[
+                                             [types.KeyboardButton(
+                                                 text='Отмена')]
+                                         ])
+    await callback.message.answer(text, reply_markup=keyboard)
 
     async with ChatActionSender.typing(chat_id=callback.message.chat.id, bot=bot):
         await asyncio.sleep(1)
@@ -94,3 +101,9 @@ async def on_true_testing(callback: types.CallbackQuery, state: FSMContext):
 async def on_false_testing(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()
     await on_test(callback, state)
+
+
+@router.message(Test.testing)
+@router.callback_query(Test.testing, )
+async def on_cancel_test(get: types.Message | types.CallbackQuery, state: FSMContext):
+    ...
