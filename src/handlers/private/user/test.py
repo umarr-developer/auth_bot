@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.chat_action import ChatActionSender
 
+from src.handlers.private.user.start import menu
 from src.keyboards.builder import asnwers_keyboard
 from src.models import Question, User
 
@@ -50,6 +51,7 @@ async def on_finish_test(callback: types.CallbackQuery, state: FSMContext):
     )
     await state.clear()
     await callback.message.answer(text, reply_markup=keyboard)
+    await menu(callback.message)
 
 
 @router.message(F.text == 'Перейти к тесту')
@@ -104,8 +106,9 @@ async def on_false_testing(callback: types.CallbackQuery, state: FSMContext):
 
 
 @router.message(Test.testing, F.text == 'Отмена' or F.text == '/cancel')
-async def on_cancel_test(message: types.Message | types.CallbackQuery, state: FSMContext):
+async def on_cancel_test(message: types.Message, state: FSMContext):
     await state.clear()
 
     text = 'Отмена теста'
     await message.answer(text)
+    await menu(message)
