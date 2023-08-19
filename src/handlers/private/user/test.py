@@ -34,7 +34,7 @@ async def on_test(callback: types.CallbackQuery, state: FSMContext):
     keyboard = asnwers_keyboard(answers)
 
     if question.photo_id:
-        await callback.message.reply_photo(question.photo_id, caption=text, reply_markup=keyboard)
+        await callback.message.answer_photo(question.photo_id, caption=text, reply_markup=keyboard)
         return
     await callback.message.answer(text, reply_markup=keyboard)
 
