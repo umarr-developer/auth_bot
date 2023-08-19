@@ -103,7 +103,9 @@ async def on_false_testing(callback: types.CallbackQuery, state: FSMContext):
     await on_test(callback, state)
 
 
-@router.message(Test.testing)
-@router.callback_query(Test.testing, )
-async def on_cancel_test(get: types.Message | types.CallbackQuery, state: FSMContext):
-    ...
+@router.message(Test.testing, F.text == 'Отмена' or F.text == '/cancel')
+async def on_cancel_test(message: types.Message | types.CallbackQuery, state: FSMContext):
+    await state.clear()
+
+    text = 'Отмена теста'
+    await message.answer(text)
