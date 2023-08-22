@@ -1,15 +1,13 @@
 import asyncio
 
 from aiogram import F, Router, types
-from aiogram.filters import Command
-from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.chat_action import ChatActionSender
-
+from aiogram.filters import StateFilter
 from src.handlers.private.user.start import menu
 from src.keyboards.builder import asnwers_keyboard
-from src.models import Question, User
+from src.models import Question
 
 router = Router()
 
@@ -54,7 +52,7 @@ async def on_finish_test(callback: types.CallbackQuery, state: FSMContext):
     await menu(callback.message)
 
 
-@router.message(F.text == 'Перейти к тесту')
+@router.message(F.text == 'Перейти к тесту', StateFilter(None))
 async def on_start_test(message: types.Message):
     text = 'Нажмите <b>Запустить тест</b>, если готовы начинать его проходить\n\n'\
         'Если хотите отменить, то введите команду или нажмите на кнопку "Отмена"'
@@ -67,7 +65,7 @@ async def on_start_test(message: types.Message):
     await message.answer(text, reply_markup=keyboard)
 
 
-@router.callback_query(F.data == 'launch_test')
+@router.callback_query(F.data == 'launch_test', StateFilter(None))
 async def on_launch_test(callback: types.CallbackQuery, state: FSMContext, db, bot):
     await callback.message.edit_reply_markup()
     text = 'Идет загрузка теста'

@@ -1,5 +1,5 @@
 from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 
 from src.models import User
 
@@ -16,7 +16,7 @@ async def menu(message: types.Message | types.CallbackQuery):
     await message.answer(text, reply_markup=keyboard)
 
 
-@router.message(Command(commands=['start']))
+@router.message(Command(commands=['start']), StateFilter(None))
 async def on_start(message: types.Message, db):
     user = await User.get(db, user_id=message.from_user.id)
     if not user:
