@@ -10,8 +10,7 @@ async def menu(message: types.Message | types.CallbackQuery):
     text = 'Выберите действие'
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
         [types.KeyboardButton(text='Перейти к тесту')],
-        [types.KeyboardButton(text='Таблица результатов'),
-         types.KeyboardButton(text='О боте')]
+        [types.KeyboardButton(text='О боте')]
     ])
     await message.answer(text, reply_markup=keyboard)
 
@@ -24,4 +23,3 @@ async def on_start(message: types.Message, db):
     text = f'Добро пожаловать, <b>{message.from_user.first_name}</b>'
     await message.answer(text)
     await menu(message)
-
