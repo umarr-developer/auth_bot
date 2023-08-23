@@ -88,7 +88,7 @@ async def on_launch_test(callback: types.CallbackQuery, state: FSMContext, db, b
     await on_test(callback, state)
 
 
-@router.callback_query(Test.testing, F.data == 'true')
+@router.callback_query(Test.testing, F.data.startswith('true'))
 async def on_true_testing(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     result = data['result']
@@ -97,7 +97,7 @@ async def on_true_testing(callback: types.CallbackQuery, state: FSMContext):
     await on_test(callback, state)
 
 
-@router.callback_query(Test.testing)
+@router.callback_query(Test.testing, F.data.startswith('false'))
 async def on_false_testing(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()
     await on_test(callback, state)
