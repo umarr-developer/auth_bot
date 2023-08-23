@@ -4,7 +4,7 @@ from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.chat_action import ChatActionSender
-from aiogram.filters import StateFilter
+from aiogram.filters import StateFilter, Command
 from src.handlers.private.user.start import menu
 from src.keyboards.builder import asnwers_keyboard
 from src.models import Question
@@ -103,7 +103,8 @@ async def on_false_testing(callback: types.CallbackQuery, state: FSMContext):
     await on_test(callback, state)
 
 
-@router.message(Test.testing, F.text == 'Отмена' or F.text == '/cancel')
+@router.message(Test.testing, F.text == 'Отмена')
+@router.message(Test.testing, Command(commands=['cancel']))
 async def on_cancel_test(message: types.Message, state: FSMContext):
     await state.clear()
 
