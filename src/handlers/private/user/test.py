@@ -1,10 +1,12 @@
+import random
 import asyncio
 
 from aiogram import F, Router, types
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.chat_action import ChatActionSender
-from aiogram.filters import StateFilter, Command
+
 from src.handlers.private.user.start import menu
 from src.keyboards.builder import asnwers_keyboard
 from src.models import Question
@@ -80,6 +82,8 @@ async def on_launch_test(callback: types.CallbackQuery, state: FSMContext, db, b
         await asyncio.sleep(1)
         text = 'Загрузка теста завершена'
         questions = await Question.all(db)
+
+        random.shuffle(questions)
 
         await state.set_state(Test.testing)
         await state.update_data(questions=questions, result=0, count=len(questions))
